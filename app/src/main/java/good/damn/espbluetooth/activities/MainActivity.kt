@@ -57,6 +57,11 @@ class MainActivity
             // -1 - not granted
             if (grantResults[0] == 0) {
                 startBluetoothManipulation()
+            } else {
+                Application.toast(
+                    "Grant permission please :)",
+                    this
+                )
             }
         }
         super.onRequestPermissionsResult(
@@ -68,9 +73,7 @@ class MainActivity
 
     private fun startBluetoothManipulation() {
         val activity = this
-        val devices = mBluetoothService?.listDevices(
-            activity
-        )
+        val devices = mBluetoothService?.listDevices()
 
         if (devices == null || devices.isEmpty()) {
             Application.toast(

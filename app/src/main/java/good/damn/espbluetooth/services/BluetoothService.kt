@@ -1,6 +1,7 @@
 package good.damn.espbluetooth.services
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
@@ -24,15 +25,9 @@ class BluetoothService(
 
     private val mDeviceAdapter = manager.adapter
 
-    fun listDevices(
-        activity: Activity
-    ): Array<BluetoothDevice>? {
-        return if (ActivityCompat.checkSelfPermission(
-                activity,
-                Manifest.permission.BLUETOOTH_CONNECT
-            ) == PackageManager.PERMISSION_GRANTED
-        ) mDeviceAdapter?.bondedDevices?.toTypedArray()
-        else null
+    @SuppressLint("MissingPermission")
+    fun listDevices(): Array<BluetoothDevice>? {
+        return mDeviceAdapter?.bondedDevices?.toTypedArray()
     }
 
 }
