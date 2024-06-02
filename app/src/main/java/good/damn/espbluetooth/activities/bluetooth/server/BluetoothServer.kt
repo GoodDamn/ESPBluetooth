@@ -2,6 +2,7 @@ package good.damn.espbluetooth.activities.bluetooth.server
 
 import android.content.Context
 import android.util.Log
+import good.damn.espbluetooth.listeners.BluetoothServerListener
 import good.damn.espbluetooth.services.BluetoothService
 
 class BluetoothServer(
@@ -12,17 +13,20 @@ class BluetoothServer(
         private const val TAG = "BluetoothServer"
     }
 
+    var delegate: BluetoothServerListener? = null
+
     private var mThread: Thread? = null
 
     override fun run() {
         val serverSocket = mBluetoothService
             .createServerSocket()
+        delegate?.onCreateBluetoothServer()
         Log.d(TAG, "run: SERVER CREATED. ACCEPTING CLIENTS")
+
         val clientSocket = serverSocket.accept()
-
-        val device = clientSocket.remoteDevice
-
-        Log.d(TAG, "run: CLIENT ACCEPTED: ${device.address}")
+        delegate?.onAcceptBluetoothClient(
+            clientSocket
+        )
 
         clientSocket.close()
         serverSocket.close()

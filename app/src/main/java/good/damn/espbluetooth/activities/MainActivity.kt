@@ -1,26 +1,33 @@
 package good.damn.espbluetooth.activities
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothSocket
 import android.content.Intent
 import android.os.Bundle
+import android.text.method.ScrollingMovementMethod
 import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import good.damn.espbluetooth.Application
 import good.damn.espbluetooth.activities.bluetooth.server.BluetoothServer
 import good.damn.espbluetooth.adapters.BluetoothDevicesAdapter
+import good.damn.espbluetooth.extensions.addText
+import good.damn.espbluetooth.listeners.BluetoothServerListener
 import good.damn.espbluetooth.listeners.OnDeviceClickListener
 import good.damn.espbluetooth.services.BluetoothService
 import good.damn.espbluetooth.services.PermissionService
 
 class MainActivity
 : AppCompatActivity(),
-OnDeviceClickListener {
+OnDeviceClickListener,
+BluetoothServerListener {
 
     companion object {
         private const val TAG = "MainActivity"
@@ -28,7 +35,9 @@ OnDeviceClickListener {
     
     private val mPermissionService = PermissionService()
     private var mBluetoothService: BluetoothService? = null
-    
+
+    private lateinit var mTextViewLog: TextView
+
     override fun onCreate(
         savedInstanceState: Bundle?
     ) {
@@ -100,6 +109,22 @@ OnDeviceClickListener {
         )
     }
 
+    override fun onCreateBluetoothServer() {
+        mTextViewLog.addText(
+            "Server created"
+        )
+    }
+
+    @SuppressLint("MissingPermission")
+    override fun onAcceptBluetoothClient(
+        socket: BluetoothSocket
+    ) {
+        val device = socket.remoteDevice
+        mTextViewLog.addText(
+            "Client ${device.name} ${device.address}"
+        )
+    }
+
     private fun onClickBtnCreateServer(
         v: View?
     ) {
@@ -111,9 +136,18 @@ OnDeviceClickListener {
             return
         }
 
-        BluetoothServer(
+        val server = BluetoothServer(
             mBluetoothService!!
-        ).start()
+        )
+
+        server.delegate = this
+
+        server.start()
+
+        Application.toast(
+            "Server socket created",
+            this
+        )
     }
 
     private fun startBluetoothManipulation() {
@@ -135,9 +169,17 @@ OnDeviceClickListener {
             activity
         )
 
+        mTextViewLog = TextView(
+            activity
+        )
+
         val recyclerView = RecyclerView(
             activity
         )
+
+        mTextViewLog.movementMethod = ScrollingMovementMethod()
+
+        mTextViewLog.text = "Logs here--\n"
 
         layout.orientation = LinearLayout
             .VERTICAL
@@ -152,6 +194,12 @@ OnDeviceClickListener {
             btnCreateServer,
             -1,
             -2
+        )
+
+        layout.addView(
+            mTextViewLog,
+            -1,
+            (200 * Application.DENSITY).toInt()
         )
 
         layout.addView(
