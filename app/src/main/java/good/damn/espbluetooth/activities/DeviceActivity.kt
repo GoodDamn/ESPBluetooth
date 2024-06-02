@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
+import android.widget.ScrollView
 import android.widget.TextView
 import androidx.annotation.WorkerThread
 import androidx.appcompat.app.AppCompatActivity
@@ -26,7 +27,6 @@ BluetoothConnectionListener {
 
     private var mDevice: BluetoothDevice? = null
     private var mTextViewMsg: TextView? = null
-    private var mBtnHello: Button? = null
 
     private val mProtocol = MessageProtocol()
 
@@ -62,6 +62,10 @@ BluetoothConnectionListener {
             mac
         )
 
+        val scrollView = ScrollView(
+            context
+        )
+
         val layout = LinearLayout(
             context
         )
@@ -70,19 +74,10 @@ BluetoothConnectionListener {
             context
         )
 
-        mBtnHello = Button(
-            context
-        )
-
         layout.orientation = LinearLayout
             .VERTICAL
 
         mTextViewMsg?.text = "Wait for response..."
-        mBtnHello?.text = "Hello, ESP32"
-
-        mBtnHello?.setOnClickListener(
-            this::onClickBtnHello
-        )
 
         layout.addView(
             mTextViewMsg,
@@ -90,14 +85,54 @@ BluetoothConnectionListener {
             -2
         )
 
-        layout.addView(
-            mBtnHello,
+        createButtonMessage(
+            "Hello, ESP32!",
+            layout
+        )
+
+        createButtonMessage(
+            "This is some message!",
+            layout
+        )
+
+        createButtonMessage(
+            "Lorem ipsum asdkjklufdjn",
+            layout
+        )
+
+        createButtonMessage(
+            "Some message",
+            layout
+        )
+
+        createButtonMessage(
+            "Diploma",
+            layout
+        )
+
+        createButtonMessage(
+            "June",
+            layout
+        )
+
+        createButtonMessage(
+            "Telegram",
+            layout
+        )
+
+        createButtonMessage(
+            "Github",
+            layout
+        )
+
+        scrollView.addView(
+            layout,
             -1,
             -2
         )
 
         setContentView(
-            layout
+            scrollView
         )
     }
 
@@ -131,8 +166,28 @@ BluetoothConnectionListener {
         )
     }
 
-    private fun onClickBtnHello(
-        v: View?
+    private fun createButtonMessage(
+        text: String,
+        layout: LinearLayout
+    ) {
+        val btnMsg = Button(
+            this
+        )
+        btnMsg.text = text
+
+        btnMsg.setOnClickListener(
+            this::onClickBtnMsg
+        )
+
+        layout.addView(
+            btnMsg,
+            -1,
+            -2
+        )
+    }
+
+    private fun onClickBtnMsg(
+        v: View
     ) {
         if (mDevice == null) {
             Application.toast(
@@ -142,12 +197,14 @@ BluetoothConnectionListener {
             return
         }
 
+        mTextViewMsg?.text = "Waiting for response..."
+
         val connection = BluetoothConnection(
             mDevice!!,
             this
         )
 
-        val text = mBtnHello?.text.toString()
+        val text = (v as? Button)?.text.toString()
 
         connection.messageText = "$text\n"
 
