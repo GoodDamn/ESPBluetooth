@@ -2,7 +2,6 @@ package good.damn.espbluetooth.activities
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothSocket
 import android.content.Intent
 import android.os.Bundle
@@ -12,10 +11,12 @@ import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.annotation.WorkerThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import good.damn.espbluetooth.Application
+import good.damn.espbluetooth.activities.bluetooth.protocol.MessageProtocol
 import good.damn.espbluetooth.activities.bluetooth.server.BluetoothServer
 import good.damn.espbluetooth.adapters.BluetoothDevicesAdapter
 import good.damn.espbluetooth.extensions.addText
@@ -24,7 +25,7 @@ import good.damn.espbluetooth.listeners.OnDeviceClickListener
 import good.damn.espbluetooth.services.BluetoothService
 import good.damn.espbluetooth.services.PermissionService
 
-class MainActivity
+class ListDevicesActivity
 : AppCompatActivity(),
 OnDeviceClickListener,
 BluetoothServerListener {
@@ -32,7 +33,8 @@ BluetoothServerListener {
     companion object {
         private const val TAG = "MainActivity"
     }
-    
+
+    private val mProtocol = MessageProtocol()
     private val mPermissionService = PermissionService()
     private var mBluetoothService: BluetoothService? = null
 
@@ -109,12 +111,14 @@ BluetoothServerListener {
         )
     }
 
+    @WorkerThread
     override fun onCreateBluetoothServer() {
         mTextViewLog.addText(
             "Server created"
         )
     }
 
+    @WorkerThread
     @SuppressLint("MissingPermission")
     override fun onAcceptBluetoothClient(
         socket: BluetoothSocket
@@ -122,6 +126,14 @@ BluetoothServerListener {
         val device = socket.remoteDevice
         mTextViewLog.addText(
             "Client ${device.name} ${device.address}"
+        )
+
+        val msg = mProtocol.getMessage(
+            socket.inputStream
+        )
+
+        mTextViewLog.addText(
+            msg
         )
     }
 
@@ -149,6 +161,7 @@ BluetoothServerListener {
             this
         )
     }
+
 
     private fun startBluetoothManipulation() {
         val activity = this

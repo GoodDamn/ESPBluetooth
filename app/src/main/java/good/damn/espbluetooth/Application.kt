@@ -13,6 +13,8 @@ class Application
         var WIDTH = 1
         const val UUID = "00001101-0000-1000-8000-00805F9B34FB"
 
+        val CHARSET_ASCII = Charsets.US_ASCII
+
         private val HANDLER = Handler(
             Looper.getMainLooper()
         )
