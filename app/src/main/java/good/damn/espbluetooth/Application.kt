@@ -2,6 +2,8 @@ package good.damn.espbluetooth
 
 import android.app.Application
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import android.widget.Toast
 
 class Application
@@ -9,6 +11,10 @@ class Application
     companion object {
         var DENSITY = 1f
         var WIDTH = 1
+
+        private val HANDLER = Handler(
+            Looper.getMainLooper()
+        )
 
         fun toast(
             msg: String,
@@ -19,6 +25,23 @@ class Application
                 msg,
                 Toast.LENGTH_LONG
             ).show()
+        }
+
+        fun toastMain(
+            msg: String,
+            context: Context
+        ) {
+            ui {
+                toast(msg,context)
+            }
+        }
+
+        fun ui(
+            run: Runnable
+        ) {
+            HANDLER.post(
+                run
+            )
         }
     }
 
