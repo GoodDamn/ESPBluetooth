@@ -8,11 +8,13 @@ import android.util.Log
 import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.RecyclerView
+import good.damn.espbluetooth.listeners.OnDeviceClickListener
 import good.damn.espbluetooth.services.PermissionService
 import good.damn.espbluetooth.view_holders.BluetoothDeviceViewHolder
 
 class BluetoothDevicesAdapter(
-    private val mDevices: Array<BluetoothDevice>
+    private val mDevices: Array<BluetoothDevice>,
+    private val mOnDeviceClickListener: OnDeviceClickListener
 ): RecyclerView.Adapter<BluetoothDeviceViewHolder>() {
 
     companion object {
@@ -48,5 +50,8 @@ class BluetoothDevicesAdapter(
             device.address
         )
 
+        holder.setOnDeviceClickListener(
+            mOnDeviceClickListener
+        )
     }
 }

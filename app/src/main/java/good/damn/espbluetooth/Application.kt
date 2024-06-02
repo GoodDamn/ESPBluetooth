@@ -9,6 +9,7 @@ class Application
     companion object {
         var DENSITY = 1f
         var WIDTH = 1
+
         fun toast(
             msg: String,
             context: Context

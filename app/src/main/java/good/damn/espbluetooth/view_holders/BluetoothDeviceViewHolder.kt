@@ -7,6 +7,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import good.damn.espbluetooth.Application
+import good.damn.espbluetooth.listeners.OnDeviceClickListener
 import good.damn.espbluetooth.utils.LayoutUtils
 
 class BluetoothDeviceViewHolder(
@@ -16,6 +17,22 @@ class BluetoothDeviceViewHolder(
 ): RecyclerView.ViewHolder(
     layout
 ) {
+    private var mOnDeviceClickListener: OnDeviceClickListener? = null
+
+    fun setOnDeviceClickListener(
+        l: OnDeviceClickListener
+    ) {
+        mOnDeviceClickListener = l
+    }
+
+    init {
+        layout.setOnClickListener {
+            mOnDeviceClickListener?.onDevice(
+                mTextViewMac.text.toString()
+            )
+        }
+    }
+
     fun setDeviceName(
         name: String
     ) {

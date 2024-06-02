@@ -2,6 +2,7 @@ package good.damn.espbluetooth.activities
 
 import android.Manifest
 import android.bluetooth.BluetoothDevice
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
@@ -9,11 +10,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import good.damn.espbluetooth.Application
 import good.damn.espbluetooth.adapters.BluetoothDevicesAdapter
+import good.damn.espbluetooth.listeners.OnDeviceClickListener
 import good.damn.espbluetooth.services.BluetoothService
 import good.damn.espbluetooth.services.PermissionService
 
 class MainActivity
-: AppCompatActivity() {
+: AppCompatActivity(),
+OnDeviceClickListener {
 
     companion object {
         private const val TAG = "MainActivity"
@@ -72,6 +75,24 @@ class MainActivity
         )
     }
 
+    override fun onDevice(
+        mac: String
+    ) {
+        val intent = Intent(
+            this,
+            DeviceActivity::class.java
+        )
+
+        intent.putExtra(
+            DeviceActivity.KEY_MAC,
+            mac
+        )
+
+        startActivity(
+            intent
+        )
+    }
+
     private fun startBluetoothManipulation() {
         val activity = this
         val devices = mBluetoothService?.listDevices()
@@ -98,7 +119,8 @@ class MainActivity
         )
 
         recyclerView.adapter = BluetoothDevicesAdapter(
-            devices
+            devices,
+            this
         )
 
         recyclerView.setHasFixedSize(
