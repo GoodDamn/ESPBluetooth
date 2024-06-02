@@ -5,10 +5,14 @@ import android.bluetooth.BluetoothDevice
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.widget.Button
+import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import good.damn.espbluetooth.Application
+import good.damn.espbluetooth.activities.bluetooth.server.BluetoothServer
 import good.damn.espbluetooth.adapters.BluetoothDevicesAdapter
 import good.damn.espbluetooth.listeners.OnDeviceClickListener
 import good.damn.espbluetooth.services.BluetoothService
@@ -45,7 +49,10 @@ OnDeviceClickListener {
         
         mPermissionService.request(
             activity,
-            Manifest.permission.BLUETOOTH_CONNECT
+            arrayOf(
+                Manifest.permission.BLUETOOTH_CONNECT,
+                Manifest.permission.BLUETOOTH
+            )
         )
     }
 
@@ -93,10 +100,26 @@ OnDeviceClickListener {
         )
     }
 
+    private fun onClickBtnCreateServer(
+        v: View?
+    ) {
+        if (mBluetoothService == null) {
+            Application.toast(
+                "Invalid Bluetooth service",
+                this
+            )
+            return
+        }
+
+        BluetoothServer(
+            mBluetoothService!!
+        ).start()
+    }
+
     private fun startBluetoothManipulation() {
         val activity = this
         val devices = mBluetoothService?.listDevices()
-        if (devices == null || devices.isEmpty()) {
+        if (devices == null) {
             Application.toast(
                 "No bluetooth devices",
                 activity
@@ -104,12 +127,41 @@ OnDeviceClickListener {
             return
         }
 
+        val layout = LinearLayout(
+            activity
+        )
+
+        val btnCreateServer = Button(
+            activity
+        )
+
         val recyclerView = RecyclerView(
             activity
         )
 
+        layout.orientation = LinearLayout
+            .VERTICAL
+
+        btnCreateServer.text = "Create server"
+
+        btnCreateServer.setOnClickListener(
+            this::onClickBtnCreateServer
+        )
+
+        layout.addView(
+            btnCreateServer,
+            -1,
+            -2
+        )
+
+        layout.addView(
+            recyclerView,
+            -1,
+            -1
+        )
+
         setContentView(
-            recyclerView
+            layout
         )
 
         recyclerView.layoutManager = LinearLayoutManager(

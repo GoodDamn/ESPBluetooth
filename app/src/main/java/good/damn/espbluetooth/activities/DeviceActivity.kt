@@ -10,7 +10,7 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import good.damn.espbluetooth.Application
-import good.damn.espbluetooth.connection.BluetoothConnection
+import good.damn.espbluetooth.activities.bluetooth.connection.BluetoothConnection
 import good.damn.espbluetooth.services.BluetoothService
 
 class DeviceActivity

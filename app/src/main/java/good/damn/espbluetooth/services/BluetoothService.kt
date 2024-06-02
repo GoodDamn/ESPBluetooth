@@ -6,11 +6,13 @@ import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
+import android.bluetooth.BluetoothServerSocket
 import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import good.damn.espbluetooth.Application
+import java.util.UUID
 import kotlin.math.log
 
 class BluetoothService(
@@ -41,6 +43,16 @@ class BluetoothService(
 
         return mDeviceAdapter.getRemoteDevice(
             mac
+        )
+    }
+
+    @SuppressLint("MissingPermission")
+    fun createServerSocket(): BluetoothServerSocket {
+        return mDeviceAdapter.listenUsingRfcommWithServiceRecord(
+            "ESP_SERVER",
+            UUID.fromString(
+                Application.UUID
+            )
         )
     }
 
