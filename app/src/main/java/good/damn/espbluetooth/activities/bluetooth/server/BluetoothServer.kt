@@ -27,7 +27,6 @@ class BluetoothServer(
             clientSocket
         )
 
-        clientSocket.close()
         serverSocket.close()
     }
 

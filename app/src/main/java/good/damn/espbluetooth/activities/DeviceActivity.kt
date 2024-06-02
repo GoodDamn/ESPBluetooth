@@ -2,18 +2,18 @@ package good.damn.espbluetooth.activities
 
 import android.bluetooth.BluetoothDevice
 import android.os.Bundle
-import android.os.PersistableBundle
-import android.util.Log
 import android.view.View
 import android.widget.Button
-import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.annotation.WorkerThread
 import androidx.appcompat.app.AppCompatActivity
 import good.damn.espbluetooth.Application
 import good.damn.espbluetooth.activities.bluetooth.connection.BluetoothConnection
+import good.damn.espbluetooth.activities.bluetooth.protocol.MessageProtocol
 import good.damn.espbluetooth.listeners.bluetooth.BluetoothConnectionListener
 import good.damn.espbluetooth.services.BluetoothService
+import java.io.InputStream
 
 class DeviceActivity
 : AppCompatActivity(),
@@ -25,7 +25,10 @@ BluetoothConnectionListener {
     }
 
     private var mDevice: BluetoothDevice? = null
-    private var mEditTextMsg: EditText? = null
+    private var mTextViewMsg: TextView? = null
+    private var mBtnHello: Button? = null
+
+    private val mProtocol = MessageProtocol()
 
     override fun onCreate(
         savedInstanceState: Bundle?
@@ -63,32 +66,32 @@ BluetoothConnectionListener {
             context
         )
 
-        mEditTextMsg = EditText(
+        mTextViewMsg = TextView(
             context
         )
 
-        val btnSend = Button(
+        mBtnHello = Button(
             context
         )
 
         layout.orientation = LinearLayout
             .VERTICAL
 
-        mEditTextMsg?.hint = "Type some msg"
-        btnSend.text = "Send"
+        mTextViewMsg?.text = "Wait for response..."
+        mBtnHello?.text = "Hello, ESP32"
 
-        btnSend.setOnClickListener(
-            this::onClickBtnSend
+        mBtnHello?.setOnClickListener(
+            this::onClickBtnHello
         )
 
         layout.addView(
-            mEditTextMsg,
+            mTextViewMsg,
             -1,
             -2
         )
 
         layout.addView(
-            btnSend,
+            mBtnHello,
             -1,
             -2
         )
@@ -107,6 +110,18 @@ BluetoothConnectionListener {
     }
 
     @WorkerThread
+    override fun onInputBluetoothData(
+        inp: InputStream
+    ) {
+        val msg = mProtocol.getMessage(
+            inp
+        )
+        Application.ui {
+            mTextViewMsg?.text = msg
+        }
+    }
+
+    @WorkerThread
     override fun onErrorBluetoothConnection(
         msg: String
     ) {
@@ -116,7 +131,7 @@ BluetoothConnectionListener {
         )
     }
 
-    private fun onClickBtnSend(
+    private fun onClickBtnHello(
         v: View?
     ) {
         if (mDevice == null) {
@@ -132,7 +147,7 @@ BluetoothConnectionListener {
             this
         )
 
-        val text = mEditTextMsg?.text.toString()
+        val text = mBtnHello?.text.toString()
 
         connection.messageText = "$text\n"
 

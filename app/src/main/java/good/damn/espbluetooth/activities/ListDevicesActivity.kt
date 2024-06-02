@@ -135,6 +135,15 @@ OnDeviceClickListener,
         mTextViewLog.addText(
             msg
         )
+
+        mTextViewLog.addText(
+            "Responding message..."
+        )
+
+        mProtocol.sendMessage(
+            msg,
+            socket.outputStream
+        )
     }
 
     private fun onClickBtnCreateServer(

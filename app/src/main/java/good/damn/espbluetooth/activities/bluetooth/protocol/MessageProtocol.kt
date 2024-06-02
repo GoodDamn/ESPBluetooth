@@ -17,6 +17,14 @@ class MessageProtocol {
         var n = 0
         while (n != 0x0A) { // Line feed
             n = inp.read()
+            if (n == 0) {
+                continue
+            }
+
+            if (n == -1) {
+                break
+            }
+
             baos.write(n)
         }
 
