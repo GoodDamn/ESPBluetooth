@@ -20,7 +20,7 @@ import good.damn.espbluetooth.activities.bluetooth.protocol.MessageProtocol
 import good.damn.espbluetooth.activities.bluetooth.server.BluetoothServer
 import good.damn.espbluetooth.adapters.BluetoothDevicesAdapter
 import good.damn.espbluetooth.extensions.addText
-import good.damn.espbluetooth.listeners.BluetoothServerListener
+import good.damn.espbluetooth.listeners.bluetooth.BluetoothServerListener
 import good.damn.espbluetooth.listeners.OnDeviceClickListener
 import good.damn.espbluetooth.services.BluetoothService
 import good.damn.espbluetooth.services.PermissionService
@@ -28,7 +28,7 @@ import good.damn.espbluetooth.services.PermissionService
 class ListDevicesActivity
 : AppCompatActivity(),
 OnDeviceClickListener,
-BluetoothServerListener {
+    BluetoothServerListener {
 
     companion object {
         private const val TAG = "MainActivity"

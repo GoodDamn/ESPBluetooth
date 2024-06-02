@@ -8,13 +8,16 @@ import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
+import androidx.annotation.WorkerThread
 import androidx.appcompat.app.AppCompatActivity
 import good.damn.espbluetooth.Application
 import good.damn.espbluetooth.activities.bluetooth.connection.BluetoothConnection
+import good.damn.espbluetooth.listeners.bluetooth.BluetoothConnectionListener
 import good.damn.espbluetooth.services.BluetoothService
 
 class DeviceActivity
-: AppCompatActivity() {
+: AppCompatActivity(),
+BluetoothConnectionListener {
 
     companion object {
         private const val TAG = "DeviceActivity"
@@ -22,6 +25,7 @@ class DeviceActivity
     }
 
     private var mDevice: BluetoothDevice? = null
+    private var mEditTextMsg: EditText? = null
 
     override fun onCreate(
         savedInstanceState: Bundle?
@@ -59,7 +63,7 @@ class DeviceActivity
             context
         )
 
-        val editTextMsg = EditText(
+        mEditTextMsg = EditText(
             context
         )
 
@@ -70,7 +74,7 @@ class DeviceActivity
         layout.orientation = LinearLayout
             .VERTICAL
 
-        editTextMsg.hint = "Type some msg"
+        mEditTextMsg?.hint = "Type some msg"
         btnSend.text = "Send"
 
         btnSend.setOnClickListener(
@@ -78,7 +82,7 @@ class DeviceActivity
         )
 
         layout.addView(
-            editTextMsg,
+            mEditTextMsg,
             -1,
             -2
         )
@@ -94,6 +98,24 @@ class DeviceActivity
         )
     }
 
+    @WorkerThread
+    override fun onCreateBluetoothConnection() {
+        Application.toastMain(
+            "Connected to device",
+            this
+        )
+    }
+
+    @WorkerThread
+    override fun onErrorBluetoothConnection(
+        msg: String
+    ) {
+        Application.toastMain(
+            msg,
+            this
+        )
+    }
+
     private fun onClickBtnSend(
         v: View?
     ) {
@@ -105,9 +127,17 @@ class DeviceActivity
             return
         }
 
-        BluetoothConnection(
+        val connection = BluetoothConnection(
             mDevice!!,
             this
-        ).start()
+        )
+
+        val text = mEditTextMsg?.text.toString()
+
+        connection.messageText = "$text\n"
+
+        connection.delegate = this
+
+        connection.start()
     }
 }

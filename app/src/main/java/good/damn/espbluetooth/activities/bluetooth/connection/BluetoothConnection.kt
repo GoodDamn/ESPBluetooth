@@ -7,6 +7,7 @@ import android.content.Context
 import android.util.Log
 import good.damn.espbluetooth.Application
 import good.damn.espbluetooth.activities.bluetooth.protocol.MessageProtocol
+import good.damn.espbluetooth.listeners.bluetooth.BluetoothConnectionListener
 
 @SuppressLint("MissingPermission")
 class BluetoothConnection(
@@ -18,8 +19,11 @@ class BluetoothConnection(
         private const val TAG = "BluetoothConnection"
     }
 
-    private val mProtocol = MessageProtocol()
+    var delegate: BluetoothConnectionListener? = null
 
+    var messageText = "Hello ESP!\n"
+
+    private val mProtocol = MessageProtocol()
     private var mSocket: BluetoothSocket? = null
 
     init {
@@ -50,6 +54,9 @@ class BluetoothConnection(
 
             Log.d(TAG, "run: PREPARE_TO_CONNECT")
             mSocket!!.connect()
+
+            delegate?.onCreateBluetoothConnection()
+
             Log.d(TAG, "run: CONNECTED")
             Application.toastMain(
                 "Connected",
@@ -57,7 +64,7 @@ class BluetoothConnection(
             )
 
             mProtocol.sendMessage(
-                "Hello message!\n",
+                messageText,
                 mSocket!!.outputStream
             )
         } catch (e: Exception) {

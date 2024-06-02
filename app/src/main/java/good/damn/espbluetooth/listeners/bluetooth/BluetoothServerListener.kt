@@ -1,4 +1,4 @@
-package good.damn.espbluetooth.listeners
+package good.damn.espbluetooth.listeners.bluetooth
 
 import android.bluetooth.BluetoothSocket
 import androidx.annotation.WorkerThread

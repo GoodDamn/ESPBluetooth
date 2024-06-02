@@ -1,8 +1,7 @@
 package good.damn.espbluetooth.activities.bluetooth.server
 
 import android.util.Log
-import good.damn.espbluetooth.activities.bluetooth.protocol.MessageProtocol
-import good.damn.espbluetooth.listeners.BluetoothServerListener
+import good.damn.espbluetooth.listeners.bluetooth.BluetoothServerListener
 import good.damn.espbluetooth.services.BluetoothService
 
 class BluetoothServer(
