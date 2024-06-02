@@ -1,6 +1,7 @@
 package good.damn.espbluetooth.activities
 
 import android.Manifest
+import android.bluetooth.BluetoothDevice
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
@@ -74,7 +75,6 @@ class MainActivity
     private fun startBluetoothManipulation() {
         val activity = this
         val devices = mBluetoothService?.listDevices()
-
         if (devices == null || devices.isEmpty()) {
             Application.toast(
                 "No bluetooth devices",

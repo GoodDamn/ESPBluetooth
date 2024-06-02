@@ -1,10 +1,13 @@
 package good.damn.espbluetooth.view_holders
 
 import android.content.Context
+import android.util.TypedValue
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import good.damn.espbluetooth.Application
+import good.damn.espbluetooth.utils.LayoutUtils
 
 class BluetoothDeviceViewHolder(
     layout: ViewGroup,
@@ -44,6 +47,19 @@ class BluetoothDeviceViewHolder(
 
             layout.orientation = LinearLayout
                 .VERTICAL
+
+            textViewName.text = "{deviceName}"
+            textViewMac.text = "{deviceMac}"
+
+            textViewName.textSize = 25f
+            textViewMac.textSize = 16f
+
+            layout.setPadding(
+                (Application.WIDTH * 0.1f).toInt(),
+                (15 * Application.DENSITY).toInt(),
+                0,
+                0
+            )
 
             layout.addView(
                 textViewName,
