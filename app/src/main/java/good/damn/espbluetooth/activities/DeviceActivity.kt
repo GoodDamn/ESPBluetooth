@@ -33,6 +33,8 @@ BluetoothConnectionListener {
     private val mProtocol = MessageProtocol()
     private var mConnection: BluetoothConnection? = null
 
+    private lateinit var mLayout: LinearLayout
+
     override fun onCreate(
         savedInstanceState: Bundle?
     ) {
@@ -40,6 +42,83 @@ BluetoothConnectionListener {
 
         val context = this
 
+        val scrollView = ScrollView(
+            context
+        )
+
+        mLayout = LinearLayout(
+            context
+        )
+
+        mTextViewMsg = TextView(
+            context
+        )
+
+        mLayout.orientation = LinearLayout
+            .VERTICAL
+
+        mTextViewMsg?.movementMethod = ScrollingMovementMethod()
+        mTextViewMsg?.text = "Connecting to device...\n"
+
+        mLayout.addView(
+            mTextViewMsg,
+            -1,
+            (200 * Application.DENSITY).toInt()
+        )
+
+        createButtonMessage(
+            "Hello, ESP32!",
+            mLayout
+        )
+
+        createButtonMessage(
+            "This is some message!",
+            mLayout
+        )
+
+        createButtonMessage(
+            "Lorem ipsum asdkjklufdjn",
+            mLayout
+        )
+
+        createButtonMessage(
+            "Some message",
+            mLayout
+        )
+
+        createButtonMessage(
+            "Diploma",
+            mLayout
+        )
+
+        createButtonMessage(
+            "June",
+            mLayout
+        )
+
+        createButtonMessage(
+            "Telegram",
+            mLayout
+        )
+
+        createButtonMessage(
+            "Github",
+            mLayout
+        )
+
+        scrollView.addView(
+            mLayout,
+            -1,
+            -2
+        )
+
+        setContentView(
+            scrollView
+        )
+    }
+
+    override fun onStart() {
+        val context = this
         val intent = intent
 
         val mac = intent.getStringExtra(
@@ -72,80 +151,7 @@ BluetoothConnectionListener {
 
         mConnection!!.delegate = this
         mConnection!!.start()
-
-        val scrollView = ScrollView(
-            context
-        )
-
-        val layout = LinearLayout(
-            context
-        )
-
-        mTextViewMsg = TextView(
-            context
-        )
-
-        layout.orientation = LinearLayout
-            .VERTICAL
-
-        mTextViewMsg?.movementMethod = ScrollingMovementMethod()
-        mTextViewMsg?.text = "Wait for response..."
-
-        layout.addView(
-            mTextViewMsg,
-            -1,
-            (200 * Application.DENSITY).toInt()
-        )
-
-        createButtonMessage(
-            "Hello, ESP32!",
-            layout
-        )
-
-        createButtonMessage(
-            "This is some message!",
-            layout
-        )
-
-        createButtonMessage(
-            "Lorem ipsum asdkjklufdjn",
-            layout
-        )
-
-        createButtonMessage(
-            "Some message",
-            layout
-        )
-
-        createButtonMessage(
-            "Diploma",
-            layout
-        )
-
-        createButtonMessage(
-            "June",
-            layout
-        )
-
-        createButtonMessage(
-            "Telegram",
-            layout
-        )
-
-        createButtonMessage(
-            "Github",
-            layout
-        )
-
-        scrollView.addView(
-            layout,
-            -1,
-            -2
-        )
-
-        setContentView(
-            scrollView
-        )
+        super.onStart()
     }
 
     override fun onBackPressed() {
@@ -156,6 +162,12 @@ BluetoothConnectionListener {
     @WorkerThread
     override fun onCreateBluetoothConnection() {
         Application.ui {
+
+            for (i in 1..8) {
+                mLayout.getChildAt(i)
+                    .visibility = View.VISIBLE
+            }
+
             mTextViewMsg?.addText(
                 "Connected"
             )
@@ -194,6 +206,7 @@ BluetoothConnectionListener {
             this
         )
         btnMsg.text = text
+        btnMsg.visibility = View.INVISIBLE
 
         btnMsg.setOnClickListener(
             this::onClickBtnMsg
