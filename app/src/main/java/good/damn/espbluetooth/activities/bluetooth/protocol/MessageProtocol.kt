@@ -16,6 +16,11 @@ class MessageProtocol {
 
         var n = 0
         while (n != 0x0A) { // Line feed
+
+            if (inp.available() == -1) {
+                break
+            }
+
             n = inp.read()
             if (n == 0) {
                 continue

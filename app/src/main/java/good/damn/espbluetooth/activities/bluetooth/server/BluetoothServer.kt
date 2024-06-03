@@ -12,6 +12,7 @@ class BluetoothServer(
         private const val TAG = "BluetoothServer"
     }
 
+    var isRunning = false
     var delegate: BluetoothServerListener? = null
 
     private var mThread: Thread? = null
@@ -20,12 +21,20 @@ class BluetoothServer(
         val serverSocket = mBluetoothService
             .createServerSocket()
         delegate?.onCreateBluetoothServer()
-        Log.d(TAG, "run: SERVER CREATED. ACCEPTING CLIENTS")
+        Log.d(TAG, "run: SERVER CREATED")
+        isRunning = true
 
-        val clientSocket = serverSocket.accept()
-        delegate?.onAcceptBluetoothClient(
-            clientSocket
-        )
+        while (isRunning) {
+            Log.d(TAG, "run: Listening clients:")
+            val clientSocket = serverSocket.accept()
+            try {
+                delegate?.onAcceptBluetoothClient(
+                    clientSocket
+                )
+            } catch (e: Exception) { }
+
+            delegate?.onDropBluetoothClient()
+        }
 
         serverSocket.close()
     }
@@ -37,6 +46,6 @@ class BluetoothServer(
     }
 
     fun stop() {
-        mThread?.interrupt()
+        isRunning = false
     }
 }

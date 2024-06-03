@@ -12,4 +12,7 @@ interface BluetoothServerListener {
     fun onAcceptBluetoothClient(
         socket: BluetoothSocket
     )
+
+    @WorkerThread
+    fun onDropBluetoothClient()
 }

@@ -2,6 +2,7 @@ package good.damn.espbluetooth.activities
 
 import android.bluetooth.BluetoothDevice
 import android.os.Bundle
+import android.text.method.ScrollingMovementMethod
 import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
@@ -87,6 +88,7 @@ BluetoothConnectionListener {
         layout.orientation = LinearLayout
             .VERTICAL
 
+        mTextViewMsg?.movementMethod = ScrollingMovementMethod()
         mTextViewMsg?.text = "Wait for response..."
 
         layout.addView(
@@ -153,10 +155,11 @@ BluetoothConnectionListener {
 
     @WorkerThread
     override fun onCreateBluetoothConnection() {
-        Application.toastMain(
-            "Connected to device",
-            this
-        )
+        Application.ui {
+            mTextViewMsg?.addText(
+                "Connected"
+            )
+        }
     }
 
     @WorkerThread

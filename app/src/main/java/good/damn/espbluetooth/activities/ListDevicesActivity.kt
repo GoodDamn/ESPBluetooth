@@ -37,6 +37,7 @@ OnDeviceClickListener,
     private val mProtocol = MessageProtocol()
     private val mPermissionService = PermissionService()
     private var mBluetoothService: BluetoothService? = null
+    private var mServer: BluetoothServer? = null
 
     private lateinit var mTextViewLog: TextView
 
@@ -119,35 +120,55 @@ OnDeviceClickListener,
     }
 
     @WorkerThread
+    override fun onDropBluetoothClient() {
+        Application.ui {
+            mTextViewLog.addText(
+                "Client dropped"
+            )
+
+            mTextViewLog.addText(
+                "Listening clients..."
+            )
+        }
+    }
+
+    @WorkerThread
     @SuppressLint("MissingPermission")
     override fun onAcceptBluetoothClient(
         socket: BluetoothSocket
     ) {
         val device = socket.remoteDevice
-        mTextViewLog.addText(
-            "Client ${device.name} ${device.address}"
-        )
+        Application.ui {
+            mTextViewLog.addText(
+                "Client ${device.name} ${device.address}"
+            )
+        }
 
-        val msg = mProtocol.getMessage(
-            socket.inputStream
-        )
+        while (socket.isConnected) {
+            val msg = mProtocol.getMessage(
+                socket.inputStream
+            )
 
-        mTextViewLog.addText(
-            msg
-        )
+            Application.ui {
+                mTextViewLog.addText(
+                    msg
+                )
+            }
 
-        mTextViewLog.addText(
-            "Responding message..."
-        )
-
-        mProtocol.sendMessage(
-            msg,
-            socket.outputStream
-        )
+            mProtocol.sendMessage(
+                msg,
+                socket.outputStream
+            )
+            Application.ui {
+                mTextViewLog.addText(
+                    "Waiting messages from ${device.name}"
+                )
+            }
+        }
     }
 
     private fun onClickBtnCreateServer(
-        v: View?
+        v: View
     ) {
         if (mBluetoothService == null) {
             Application.toast(
@@ -157,17 +178,24 @@ OnDeviceClickListener,
             return
         }
 
-        val server = BluetoothServer(
+        if (mServer?.isRunning ?: false) {
+            mServer?.stop()
+            mTextViewLog.addText(
+                "Server stopped"
+            )
+            return
+        }
+
+        mServer = BluetoothServer(
             mBluetoothService!!
         )
 
-        server.delegate = this
+        mServer!!.delegate = this
 
-        server.start()
+        mServer!!.start()
 
-        Application.toast(
-            "Server socket created",
-            this
+        mTextViewLog.addText(
+            "Server created"
         )
     }
 

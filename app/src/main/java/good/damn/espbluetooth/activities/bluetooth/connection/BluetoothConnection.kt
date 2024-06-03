@@ -58,10 +58,6 @@ class BluetoothConnection(
             delegate?.onCreateBluetoothConnection()
 
             Log.d(TAG, "run: CONNECTED")
-            Application.toastMain(
-                "Connected",
-                mContext
-            )
 
             val out = mSocket!!.outputStream
             while (mSocket!!.isConnected) {
