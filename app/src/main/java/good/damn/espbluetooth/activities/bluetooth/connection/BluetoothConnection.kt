@@ -64,19 +64,27 @@ class BluetoothConnection(
             )
 
             val out = mSocket!!.outputStream
+            while (mSocket!!.isConnected) {
 
-            mProtocol.sendMessage(
-                messageText,
-                out
-            )
+                if (messageText.isEmpty()) {
+                    continue
+                }
 
-            out.flush()
+                synchronized(messageText) {
+                    mProtocol.sendMessage(
+                        messageText,
+                        out
+                    )
 
-            delegate?.onInputBluetoothData(
-                mSocket!!.inputStream
-            )
+                    out.flush()
 
-            mSocket!!.close()
+                    delegate?.onInputBluetoothData(
+                        mSocket!!.inputStream
+                    )
+
+                    messageText = ""
+                }
+            }
         } catch (e: Exception) {
             Application.toastMain(
                 "Couldn't connect: ${e.message}",

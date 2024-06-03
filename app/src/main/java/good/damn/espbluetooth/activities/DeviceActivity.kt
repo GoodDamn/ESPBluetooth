@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import good.damn.espbluetooth.Application
 import good.damn.espbluetooth.activities.bluetooth.connection.BluetoothConnection
 import good.damn.espbluetooth.activities.bluetooth.protocol.MessageProtocol
+import good.damn.espbluetooth.extensions.addText
 import good.damn.espbluetooth.listeners.bluetooth.BluetoothConnectionListener
 import good.damn.espbluetooth.services.BluetoothService
 import java.io.InputStream
@@ -29,6 +30,7 @@ BluetoothConnectionListener {
     private var mTextViewMsg: TextView? = null
 
     private val mProtocol = MessageProtocol()
+    private var mConnection: BluetoothConnection? = null
 
     override fun onCreate(
         savedInstanceState: Bundle?
@@ -62,6 +64,14 @@ BluetoothConnectionListener {
             mac
         )
 
+        mConnection = BluetoothConnection(
+            mDevice!!,
+            this
+        )
+
+        mConnection!!.delegate = this
+        mConnection!!.start()
+
         val scrollView = ScrollView(
             context
         )
@@ -82,7 +92,7 @@ BluetoothConnectionListener {
         layout.addView(
             mTextViewMsg,
             -1,
-            -2
+            (200 * Application.DENSITY).toInt()
         )
 
         createButtonMessage(
@@ -136,6 +146,11 @@ BluetoothConnectionListener {
         )
     }
 
+    override fun onBackPressed() {
+        mConnection?.close()
+        super.onBackPressed()
+    }
+
     @WorkerThread
     override fun onCreateBluetoothConnection() {
         Application.toastMain(
@@ -152,7 +167,9 @@ BluetoothConnectionListener {
             inp
         )
         Application.ui {
-            mTextViewMsg?.text = msg
+            mTextViewMsg?.addText(
+                msg
+            )
         }
     }
 
@@ -197,19 +214,11 @@ BluetoothConnectionListener {
             return
         }
 
-        mTextViewMsg?.text = "Waiting for response..."
-
-        val connection = BluetoothConnection(
-            mDevice!!,
-            this
+        mTextViewMsg?.addText(
+            "Waiting for response..."
         )
 
         val text = (v as? Button)?.text.toString()
-
-        connection.messageText = "$text\n"
-
-        connection.delegate = this
-
-        connection.start()
+        mConnection?.messageText = "$text\n"
     }
 }
