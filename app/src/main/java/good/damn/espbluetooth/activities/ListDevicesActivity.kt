@@ -27,19 +27,14 @@ import good.damn.espbluetooth.services.PermissionService
 
 class ListDevicesActivity
 : AppCompatActivity(),
-OnDeviceClickListener,
-    BluetoothServerListener {
+OnDeviceClickListener {
 
     companion object {
         private const val TAG = "MainActivity"
     }
 
-    private val mProtocol = MessageProtocol()
     private val mPermissionService = PermissionService()
     private var mBluetoothService: BluetoothService? = null
-    private var mServer: BluetoothServer? = null
-
-    private lateinit var mTextViewLog: TextView
 
     override fun onCreate(
         savedInstanceState: Bundle?
@@ -112,94 +107,6 @@ OnDeviceClickListener,
         )
     }
 
-    @WorkerThread
-    override fun onCreateBluetoothServer() {
-        mTextViewLog.addText(
-            "Server created"
-        )
-    }
-
-    @WorkerThread
-    override fun onDropBluetoothClient() {
-        Application.ui {
-            mTextViewLog.addText(
-                "Client dropped"
-            )
-
-            mTextViewLog.addText(
-                "Listening clients..."
-            )
-        }
-    }
-
-    @WorkerThread
-    @SuppressLint("MissingPermission")
-    override fun onAcceptBluetoothClient(
-        socket: BluetoothSocket
-    ) {
-        val device = socket.remoteDevice
-        Application.ui {
-            mTextViewLog.addText(
-                "Client ${device.name} ${device.address}"
-            )
-        }
-
-        while (socket.isConnected) {
-            val msg = mProtocol.getMessage(
-                socket.inputStream
-            )
-
-            Application.ui {
-                mTextViewLog.addText(
-                    msg
-                )
-            }
-
-            mProtocol.sendMessage(
-                msg,
-                socket.outputStream
-            )
-            Application.ui {
-                mTextViewLog.addText(
-                    "Waiting messages from ${device.name}"
-                )
-            }
-        }
-    }
-
-    private fun onClickBtnCreateServer(
-        v: View
-    ) {
-        if (mBluetoothService == null) {
-            Application.toast(
-                "Invalid Bluetooth service",
-                this
-            )
-            return
-        }
-
-        if (mServer?.isRunning ?: false) {
-            mServer?.stop()
-            mTextViewLog.addText(
-                "Server stopped"
-            )
-            return
-        }
-
-        mServer = BluetoothServer(
-            mBluetoothService!!
-        )
-
-        mServer!!.delegate = this
-
-        mServer!!.start()
-
-        mTextViewLog.addText(
-            "Server created"
-        )
-    }
-
-
     private fun startBluetoothManipulation() {
         val activity = this
         val devices = mBluetoothService?.listDevices()
@@ -211,55 +118,12 @@ OnDeviceClickListener,
             return
         }
 
-        val layout = LinearLayout(
-            activity
-        )
-
-        val btnCreateServer = Button(
-            activity
-        )
-
-        mTextViewLog = TextView(
-            activity
-        )
-
         val recyclerView = RecyclerView(
             activity
         )
 
-        mTextViewLog.movementMethod = ScrollingMovementMethod()
-
-        mTextViewLog.text = "Logs here--\n"
-
-        layout.orientation = LinearLayout
-            .VERTICAL
-
-        btnCreateServer.text = "Create server"
-
-        btnCreateServer.setOnClickListener(
-            this::onClickBtnCreateServer
-        )
-
-        layout.addView(
-            btnCreateServer,
-            -1,
-            -2
-        )
-
-        layout.addView(
-            mTextViewLog,
-            -1,
-            (200 * Application.DENSITY).toInt()
-        )
-
-        layout.addView(
-            recyclerView,
-            -1,
-            -1
-        )
-
         setContentView(
-            layout
+            recyclerView
         )
 
         recyclerView.layoutManager = LinearLayoutManager(
