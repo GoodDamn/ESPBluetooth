@@ -9,6 +9,7 @@ import android.text.method.ScrollingMovementMethod
 import android.util.Log
 import android.view.View
 import android.widget.Button
+import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.WorkerThread
@@ -108,9 +109,40 @@ OnDeviceClickListener {
     }
 
     private fun startBluetoothManipulation() {
+        if (mBluetoothService == null) {
+            return
+        }
+
         val activity = this
-        val devices = mBluetoothService?.listDevices()
-        if (devices == null) {
+
+        if (!mBluetoothService!!.isAvailable) {
+            Application.toast(
+                "Please enable Bluetooth",
+                activity
+            )
+            val layout = FrameLayout(
+                activity
+            )
+            val btnReload = Button(
+                activity
+            )
+            btnReload.text = "Reload bluetooth list"
+            btnReload.setOnClickListener {
+                startBluetoothManipulation()
+            }
+            layout.addView(
+                btnReload,
+                -1,-2
+            )
+            setContentView(
+                layout
+            )
+            return
+        }
+
+        val devices = mBluetoothService!!.listDevices()
+
+        if (devices.isNullOrEmpty()) {
             Application.toast(
                 "No bluetooth devices",
                 activity

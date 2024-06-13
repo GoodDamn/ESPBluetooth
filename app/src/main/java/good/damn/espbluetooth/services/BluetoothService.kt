@@ -28,6 +28,9 @@ class BluetoothService(
 
     private val mDeviceAdapter = manager.adapter
 
+    var isAvailable = false
+        get() = mDeviceAdapter.isEnabled
+
     @SuppressLint("MissingPermission")
     fun listDevices(): Array<BluetoothDevice>? {
         return mDeviceAdapter?.bondedDevices?.toTypedArray()
