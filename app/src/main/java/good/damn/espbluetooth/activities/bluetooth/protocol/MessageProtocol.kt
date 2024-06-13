@@ -15,13 +15,14 @@ class MessageProtocol {
     fun getMessage(
         inp: InputStream
     ): String {
-        val baos = ByteArrayOutputStream(
-            100
-        )
+
+        var i = 0
+        var result = ""
 
         var attempts = 0
-        var n = 0
-        while (n != 0x0A) { // Line feed
+        var dataByte: Int
+        var hex: String
+        while (true) { // Line feed
 
             if (inp.available() == -1) {
                 break
@@ -35,35 +36,44 @@ class MessageProtocol {
                 continue
             }
             attempts = 0
-            n = inp.read()
-            if (n == 0) {
-                continue
+            dataByte = inp.read()
+
+            hex = Integer.toHexString(
+                dataByte
+            )
+
+            if (i != 0) {
+                result += "-"
             }
 
-            if (n == -1) {
-                break
-            }
-
-            baos.write(n)
+            result += hex
+            i++
         }
 
-        val msgBytes = baos.toByteArray()
-        baos.close()
-
-        return String(
-            msgBytes,
-            Application.CHARSET_ASCII
-        )
+        return result
     }
 
     fun sendMessage(
-        msg: String,
+        hexMsg: String,
         out: OutputStream
     ) {
+        val hexArray = hexMsg.split(
+            "-".toRegex()
+        )
+
+        val bytes = ByteArray(
+            hexArray.size
+        )
+
+        for (i in hexArray.indices) {
+            bytes[i] = Integer.parseInt(
+                hexArray[i],
+                16
+            ).toByte()
+        }
+
         out.write(
-            msg.toByteArray(
-                Application.CHARSET_ASCII
-            )
+            bytes
         )
     }
 
