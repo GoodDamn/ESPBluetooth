@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
 import android.view.View
 import android.widget.Button
+import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
@@ -28,7 +29,8 @@ BluetoothConnectionListener {
     }
 
     private var mDevice: BluetoothDevice? = null
-    private var mTextViewMsg: TextView? = null
+    private lateinit var mTextViewMsg: TextView
+    private lateinit var mEditTextMsg: EditText
 
     private val mProtocol = MessageProtocol()
     private var mConnection: BluetoothConnection? = null
@@ -41,69 +43,47 @@ BluetoothConnectionListener {
         super.onCreate(savedInstanceState)
 
         val context = this
-
         val scrollView = ScrollView(
             context
         )
-
         mLayout = LinearLayout(
             context
         )
-
         mTextViewMsg = TextView(
             context
         )
+        mEditTextMsg = EditText(
+            context
+        )
+        val btnSend = Button(
+            context
+        )
+
 
         mLayout.orientation = LinearLayout
             .VERTICAL
+        mTextViewMsg.movementMethod = ScrollingMovementMethod()
 
-        mTextViewMsg?.movementMethod = ScrollingMovementMethod()
-        mTextViewMsg?.text = "Connecting to device...\n"
+        mTextViewMsg.text = "Connecting to device...\n"
+        mEditTextMsg.hint = "00-00-00-00-00-00-00-00-00-00"
+        btnSend.text = "Send"
+
+
 
         mLayout.addView(
             mTextViewMsg,
             -1,
             (200 * Application.DENSITY).toInt()
         )
-
-        createButtonMessage(
-            "Hello, ESP32!",
-            mLayout
+        mLayout.addView(
+            mEditTextMsg,
+            -1,
+            -2
         )
-
-        createButtonMessage(
-            "This is some message!",
-            mLayout
-        )
-
-        createButtonMessage(
-            "Lorem ipsum asdkjklufdjn",
-            mLayout
-        )
-
-        createButtonMessage(
-            "Some message",
-            mLayout
-        )
-
-        createButtonMessage(
-            "Diploma",
-            mLayout
-        )
-
-        createButtonMessage(
-            "June",
-            mLayout
-        )
-
-        createButtonMessage(
-            "Telegram",
-            mLayout
-        )
-
-        createButtonMessage(
-            "Github",
-            mLayout
+        mLayout.addView(
+            btnSend,
+            -1,
+            -2
         )
 
         scrollView.addView(
@@ -114,6 +94,10 @@ BluetoothConnectionListener {
 
         setContentView(
             scrollView
+        )
+
+        btnSend.setOnClickListener(
+            this::onClickBtnSend
         )
     }
 
@@ -168,7 +152,7 @@ BluetoothConnectionListener {
                     .visibility = View.VISIBLE
             }
 
-            mTextViewMsg?.addText(
+            mTextViewMsg.addText(
                 "Connected"
             )
         }
@@ -182,7 +166,7 @@ BluetoothConnectionListener {
             inp
         )
         Application.ui {
-            mTextViewMsg?.addText(
+            mTextViewMsg.addText(
                 msg
             )
         }
@@ -198,29 +182,9 @@ BluetoothConnectionListener {
         )
     }
 
-    private fun createButtonMessage(
-        text: String,
-        layout: LinearLayout
-    ) {
-        val btnMsg = Button(
-            this
-        )
-        btnMsg.text = text
-        btnMsg.visibility = View.INVISIBLE
 
-        btnMsg.setOnClickListener(
-            this::onClickBtnMsg
-        )
-
-        layout.addView(
-            btnMsg,
-            -1,
-            -2
-        )
-    }
-
-    private fun onClickBtnMsg(
-        v: View
+    private fun onClickBtnSend(
+        view: View
     ) {
         if (mDevice == null) {
             Application.toast(
@@ -230,11 +194,10 @@ BluetoothConnectionListener {
             return
         }
 
-        mTextViewMsg?.addText(
+        mConnection?.messageText = "${mEditTextMsg.text}"
+        mTextViewMsg.addText(
             "Waiting for response..."
         )
-
-        val text = (v as? Button)?.text.toString()
-        mConnection?.messageText = "$text\n"
     }
+
 }

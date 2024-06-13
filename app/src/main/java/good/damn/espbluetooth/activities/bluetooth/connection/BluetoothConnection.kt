@@ -21,7 +21,7 @@ class BluetoothConnection(
 
     var delegate: BluetoothConnectionListener? = null
 
-    var messageText = "Hello ESP!\n"
+    var messageText = "00-00-00-00-00-00-00-00-00-00"
 
     private val mProtocol = MessageProtocol()
     private var mSocket: BluetoothSocket? = null
