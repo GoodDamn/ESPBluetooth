@@ -147,7 +147,7 @@ BluetoothConnectionListener {
     override fun onCreateBluetoothConnection() {
         Application.ui {
 
-            for (i in 1..8) {
+            for (i in 1..2) {
                 mLayout.getChildAt(i)
                     .visibility = View.VISIBLE
             }
