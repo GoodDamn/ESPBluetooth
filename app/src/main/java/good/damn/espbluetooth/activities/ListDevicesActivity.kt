@@ -7,6 +7,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
 import android.util.Log
+import android.view.Gravity
 import android.view.View
 import android.widget.Button
 import android.widget.FrameLayout
@@ -25,6 +26,7 @@ import good.damn.espbluetooth.listeners.bluetooth.BluetoothServerListener
 import good.damn.espbluetooth.listeners.OnDeviceClickListener
 import good.damn.espbluetooth.services.BluetoothService
 import good.damn.espbluetooth.services.PermissionService
+import org.w3c.dom.Text
 
 class ListDevicesActivity
 : AppCompatActivity(),
@@ -120,16 +122,29 @@ OnDeviceClickListener {
                 "Please enable Bluetooth",
                 activity
             )
-            val layout = FrameLayout(
+            val layout = LinearLayout(
+                activity
+            )
+            val textView = TextView(
                 activity
             )
             val btnReload = Button(
                 activity
             )
+            layout.orientation = LinearLayout
+                .VERTICAL
+            textView.gravity = Gravity
+                .CENTER_HORIZONTAL
+            textView.text = "Please enable bluetooth"
             btnReload.text = "Reload bluetooth list"
             btnReload.setOnClickListener {
                 startBluetoothManipulation()
             }
+            layout.addView(
+                textView,
+                -1,
+                -2
+            )
             layout.addView(
                 btnReload,
                 -1,-2
