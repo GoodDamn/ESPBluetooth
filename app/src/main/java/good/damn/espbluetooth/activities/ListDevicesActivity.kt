@@ -36,6 +36,7 @@ OnDeviceClickListener {
         private const val TAG = "MainActivity"
     }
 
+    private val macTarget = "C0:49:EF:01:2E:7A"
     private val mPermissionService = PermissionService()
     private var mBluetoothService: BluetoothService? = null
 
@@ -179,8 +180,18 @@ OnDeviceClickListener {
             false
         )
 
+        var j = 0
+        for (i in devices.indices) {
+            if (devices[i].address.equals(macTarget)) {
+                j = i
+                break
+            }
+        }
+
         recyclerView.adapter = BluetoothDevicesAdapter(
-            devices,
+            arrayOf(
+                devices[j]
+            ),
             this
         )
 
